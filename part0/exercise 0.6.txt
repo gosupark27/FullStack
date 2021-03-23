@@ -1,0 +1,17 @@
+SPA (Single Page Application) create new note 
+
+note over browser: 
+Instead of a URL redirect
+browser stays on the same page. 
+New note is added to notes array
+and it is rerendered on the page
+and sends the new note to the server.
+end note
+browser->server: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+note right of browser:
+content-type:application/JSON
+end note
+note left of server:
+Server responds with HTTP code
+201 created
+end note
