@@ -14,7 +14,7 @@ const App = () => {
   ]
    
   const [selected, setSelected] = useState(0)
-  const arr = Array.apply(null, new Array(anecdotes.length)).map(Number.prototype.valueOf,0)
+  const arr = Array.apply(null, new Array(anecdotes.length)).fill(0)
   const [vote, setVote] = useState(arr)
   
   const setToSelected = () => {
