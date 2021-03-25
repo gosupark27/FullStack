@@ -1,6 +1,6 @@
 import React from 'react'
 
-const PhonebookEntry = ({id,name,number}) => {
+const PhonebookEntry = ({name, number}) => {
 
     return (
         <tr>
