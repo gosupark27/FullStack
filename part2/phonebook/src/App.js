@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react'
 import SearchFilter from './components/SearchFilter'
 import Form from './components/Form'
 import Phonebook from './components/Phonebook'
-import axios from 'axios'
+import personService from './services/phone'
+import Notification from './components/Notification'
 
 const App = () => {
 
@@ -10,37 +11,57 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newPhone, setNewPhone] = useState('')
   const [search, setSearch] = useState('')
+  const [message, setMessage] = useState('')
+  const [warning, setWarning] = useState(false)
 
-  useEffect(() =>{
-    axios
-    .get('http://localhost:3001/persons')
-    .then(response =>{
-      const getPersons = response.data
-      setPersons(getPersons)
-    })
-  },[])
+  useEffect(() => {
+    personService
+      .getAll()
+      .then(initialPersons => {
+        setPersons(initialPersons)
+      })
+  }, [])
 
   const setToNewName = (e) => { setNewName(e.target.value) }
   const setToNewPhone = (e) => { setNewPhone(e.target.value) }
 
+  const existingPerson = () => {
+    const match = persons.filter(person => person.name.toLowerCase() === (newName.toLowerCase()))
+    
+    if (match.length > 0) {
+      const phoneMatch = (match[0].phone === newPhone)
+      if (!phoneMatch) {
+        const msg = `${match[0].name} is already added to the phonebook - replace the old number with a new one?`
+        if (window.confirm(msg)) {
+          const newPerson = {
+            name: match[0].name,
+            phone: newPhone
+          }
+          // Comparing names for now since only the phone has been updated
+          personService.update(match[0].id, newPerson).then(newP => setPersons(persons.map(p => (p.id !== newP.id) ? p : newP)))
+
+        }
+      }
+      setMessage(`${match.name} is already added to the phone book - ${newPhone} is already added to the phone book `)
+      setWarning(!warning)
+      return false
+    }
+    return true
+  }
 
   const setToPerson = e => {
     e.preventDefault()
+    if (existingPerson()) {
+      const newPerson = {
+        name: newName,
+        phone: newPhone
+      }
 
-    if (persons.filter(person => person.name.toLowerCase() === (newName.toLowerCase())).length > 0) {
-      alert(`${newName} is already added to the phonebook`)
-      return;
+      personService.create(newPerson).then(returnedPerson => setPersons(persons.concat(returnedPerson)))
+      setNewName('')
+      setNewPhone('')
+      setMessage(`Added ${newPerson.name}`)
     }
-
-    const newPerson = {
-      name: newName,
-      phone: newPhone
-    }
-
-    const personCopy = [...persons, newPerson]
-    setPersons(personCopy)
-    setNewName('')
-    setNewPhone('')
   }
 
   const setToSearch = e => {
@@ -50,14 +71,29 @@ const App = () => {
     setSearch(searchTerm)
   }
 
+  const deletePerson = e => {
+    const id = parseInt(e.target.id)
+    const delPerson = persons.filter(p => p.id === id)
+    personService.del(id)
+      .catch(() => {
+        setWarning(!warning)
+        setMessage(`Information of ${delPerson.name} has already been removed from the server. `)
+      })
+    setPersons(persons.filter(p => p.id !== id))
+    setMessage('')
+  }
+
+
+
   return (
     <div>
       <h2>Phonebook</h2>
-      <SearchFilter value={search} onChange={setToSearch}/>
+      {(message === "") ? null : <Notification message={message} warning={warning} />}
+      <SearchFilter value={search} onChange={setToSearch} />
       <h2>add a new</h2>
-      <Form onSubmit={setToPerson} value={[newName, newPhone]} onChange={[setToNewName, setToNewPhone]}/>
+      <Form onSubmit={setToPerson} value={[newName, newPhone]} onChange={[setToNewName, setToNewPhone]} />
       <h2>Numbers</h2>
-      <Phonebook persons={persons}/>
+      <Phonebook persons={persons} deletePerson={deletePerson} />
     </div>
   )
 }

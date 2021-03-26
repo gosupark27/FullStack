@@ -15,7 +15,10 @@ const Country = ({ list }) => {
             await axios.get(url)
                 .then(response => {
                     const weatherData = response.data
-                    setWeather(weatherData)
+                    if(response.success){
+                        setWeather(weatherData)
+                    }
+                    setWeather(undefined)
                 })
         }
         fetchWeather()
