@@ -1,18 +1,24 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import SearchFilter from './components/SearchFilter'
 import Form from './components/Form'
 import Phonebook from './components/Phonebook'
+import axios from 'axios'
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', phone: '040-123456' },
-    { name: 'Ada Lovelace', phone: '39-44-5323523' },
-    { name: 'Dan Abramov', phone: '12-43-234345' },
-    { name: 'Mary Poppendieck', phone: '39-23-6423122' }
-  ])
+
+  const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newPhone, setNewPhone] = useState('')
   const [search, setSearch] = useState('')
+
+  useEffect(() =>{
+    axios
+    .get('http://localhost:3001/persons')
+    .then(response =>{
+      const getPersons = response.data
+      setPersons(getPersons)
+    })
+  },[])
 
   const setToNewName = (e) => { setNewName(e.target.value) }
   const setToNewPhone = (e) => { setNewPhone(e.target.value) }
@@ -33,6 +39,8 @@ const App = () => {
 
     const personCopy = [...persons, newPerson]
     setPersons(personCopy)
+    setNewName('')
+    setNewPhone('')
   }
 
   const setToSearch = e => {
@@ -46,7 +54,9 @@ const App = () => {
     <div>
       <h2>Phonebook</h2>
       <SearchFilter value={search} onChange={setToSearch}/>
+      <h2>add a new</h2>
       <Form onSubmit={setToPerson} value={[newName, newPhone]} onChange={[setToNewName, setToNewPhone]}/>
+      <h2>Numbers</h2>
       <Phonebook persons={persons}/>
     </div>
   )

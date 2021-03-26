@@ -6,7 +6,6 @@ const Form = ({onSubmit, value, onChange}) => {
 
     return (
         <div>
-            <h2>add a new</h2>
             <form onSubmit={onSubmit}>
                 <div>
                     name: <input value={name} onChange={setName } />
