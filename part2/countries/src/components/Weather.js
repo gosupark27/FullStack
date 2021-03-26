@@ -13,7 +13,7 @@ const Weather = ({weather}) => {
     }
     else{
         return(
-            <div></div>
+            <h1 style={{color:'red'}}><strong>Sorry, there is no available weather forecast.</strong></h1>
         )
     }
 }
