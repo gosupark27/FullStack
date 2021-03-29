@@ -18,7 +18,7 @@ const App = () => {
     personService
       .getAll()
       .then(initialPersons => {
-        setPersons(initialPersons)
+        setPersons(initialPersons.persons)
       })
   }, [])
 
@@ -27,7 +27,7 @@ const App = () => {
 
   const existingPerson = () => {
     const match = persons.filter(person => person.name.toLowerCase() === (newName.toLowerCase()))
-    
+
     if (match.length > 0) {
       const phoneMatch = (match[0].phone === newPhone)
       if (!phoneMatch) {
@@ -61,7 +61,14 @@ const App = () => {
       setNewName('')
       setNewPhone('')
       setMessage(`Added ${newPerson.name}`)
+      clearMessage()
     }
+  }
+
+  const clearMessage = () => {
+    setTimeout(() => {
+      setMessage(null)
+    },5000 )
   }
 
   const setToSearch = e => {
@@ -75,9 +82,13 @@ const App = () => {
     const id = parseInt(e.target.id)
     const delPerson = persons.filter(p => p.id === id)
     personService.del(id)
+      .then(person =>{
+        setMessage(`${person.name} has been deleted.`)
+      })
       .catch(() => {
         setWarning(!warning)
         setMessage(`Information of ${delPerson.name} has already been removed from the server. `)
+        clearMessage()
       })
     setPersons(persons.filter(p => p.id !== id))
     setMessage('')
