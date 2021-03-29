@@ -1,6 +1,7 @@
 import axios from 'axios'
 
-const baseUrl = 'http://localhost:3001/persons'
+// Relative url since front and backend are both on same address
+const baseUrl = '/api/persons'
 
 const getAll = async () => {
     const request = await axios
@@ -24,7 +25,9 @@ const update = async (id, newObj) => {
 }
 
 const del = async (id) => {
-    const request = await axios.delete(`${baseUrl}/${id}`)
+    const request = await axios
+                          .delete(`${baseUrl}/${id}`)
+                          .then(response => response.data)
     return request
 }
 // To avoid eslint warning: 'Assign object to a variable before exporting as module default' 

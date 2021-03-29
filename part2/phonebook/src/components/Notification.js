@@ -3,6 +3,12 @@ import React from 'react'
 
 const Notification = ({ message, warning }) => {
 
+    if(message === null){
+        return(
+            <div></div>
+        );
+    }
+
     if(warning){
         return (
             <div >
