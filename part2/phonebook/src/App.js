@@ -15,6 +15,7 @@ const App = () => {
   const [warning, setWarning] = useState(false)
 
   useEffect(() => {
+    console.log('Calling on personService...')
     personService
       .getAll()
       .then(initialPersons => {
@@ -105,7 +106,7 @@ const App = () => {
       <h2>add a new</h2>
       <Form onSubmit={setToPerson} value={[newName, newPhone]} onChange={[setToNewName, setToNewPhone]} />
       <h2>Numbers</h2>
-      <Phonebook persons={persons} deletePerson={deletePerson} />
+      <Phonebook people={persons} deletePerson={deletePerson} />
     </div>
   )
 }
