@@ -19,8 +19,12 @@ const App = () => {
     personService
       .getAll()
       .then(initialPersons => {
-        setPersons(initialPersons.persons)
+        console.log('useEffect data:', initialPersons)
+        setPersons(initialPersons)
         console.log("When we fetch initially:", initialPersons)
+      })
+      .catch(error => {
+        console.log('error', error)
       })
   }, [])
 
@@ -95,6 +99,7 @@ const App = () => {
     setPersons(persons.filter(p => p.id !== id))
     setMessage('')
   }
+  console.log('value of persons:', persons)
 
 
 

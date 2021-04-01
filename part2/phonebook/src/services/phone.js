@@ -1,12 +1,14 @@
 import axios from 'axios'
 
 // Relative url since front and backend are both on same address
-const baseUrl = 'https://pacific-scrubland-50464.herokuapp.com/api/persons'
+const baseUrl = '/api/persons'
 
 const getAll = async () => {
+    console.log('Fetching all...')
     const request = await axios
                           .get(baseUrl)
                           .then(response => response.data)
+                          .catch(error => console.log(error))
     return request
 }
 
