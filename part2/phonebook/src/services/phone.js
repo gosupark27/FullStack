@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 // Relative url since front and backend are both on same address
-const baseUrl = 'http://localhost:3001/api/persons'
+const baseUrl = '/api/persons'
 
 const getAll = async () => {
     const request = await axios
@@ -19,14 +19,14 @@ const create = async (newObj) => {
 
 const update = async (id, newObj) => {
     const request = await axios
-                          .put(`${baseUrl}/${id}`, newObj)
+                          .put(`${baseUrl}/?id=${id}`, newObj)
                           .then(response => response.data)
     return request
 }
 
 const del = async (id) => {
     const request = await axios
-                          .delete(`${baseUrl}/${id}`)
+                          .delete(`${baseUrl}/?id=${id}`)
                           .then(response => response.data)
     return request
 }
