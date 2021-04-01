@@ -4,7 +4,7 @@ import PhonebookEntry from './PhonebookEntry'
 const Phonebook = ({ people, deletePerson }) => {
     //Persons is an object -- does not have a length 
     console.log('people:', people)
-    if(people.length === 0)
+    if(people.length === 0 || typeof people === 'undefined')
     return(
         <div></div>
     )
