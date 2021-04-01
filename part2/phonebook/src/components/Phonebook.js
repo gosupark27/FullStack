@@ -4,7 +4,7 @@ import PhonebookEntry from './PhonebookEntry'
 const Phonebook = ({ persons, deletePerson }) => {
     
     const phonebookEntries = () => {
-        if (persons.length !== 0) {
+        if (persons.length !== 0 || typeof persons !== 'undefined') {
             return persons.map(person => <PhonebookEntry key={person.name} id={person.id} deletePerson={deletePerson} name={person.name} number={person.phone} />)
         }
     }
