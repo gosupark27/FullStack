@@ -19,6 +19,7 @@ const App = () => {
       .getAll()
       .then(initialPersons => {
         setPersons(initialPersons.persons)
+        console.log("When we fetch initially:", initialPersons)
       })
   }, [])
 

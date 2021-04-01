@@ -20,7 +20,7 @@
     "server": "json-server -p3001 --watch db.json",
     "git": "(git add .) -and (git commit -m)"
   },
-  "proxy":"http://localhost:3001",
+  "proxy":"https://pacific-scrubland-50464.herokuapp.com",
   "eslintConfig": {
     "extends": [
       "react-app",
