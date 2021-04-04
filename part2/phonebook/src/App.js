@@ -7,6 +7,7 @@ import Notification from './components/Notification'
 
 const App = () => {
 
+  // TODO: Rename persons to people....come on lol. 
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newPhone, setNewPhone] = useState('')
@@ -15,66 +16,100 @@ const App = () => {
   const [warning, setWarning] = useState(false)
 
   useEffect(() => {
-    console.log('Calling on personService...')
+    document.title = 'Phonebook'
     personService
       .getAll()
       .then(initialPersons => {
-        console.log('useEffect data:', initialPersons)
         setPersons(initialPersons)
-        console.log("When we fetch initially:", initialPersons)
       })
       .catch(error => {
-        console.log('error', error)
+        console.log('error:', error)
       })
   }, [])
 
   const setToNewName = (e) => { setNewName(e.target.value) }
   const setToNewPhone = (e) => { setNewPhone(e.target.value) }
 
-  const existingPerson = () => {
-    const match = persons.filter(person => person.name.toLowerCase() === (newName.toLowerCase()))
+  const formatName = (name) => {
+    let fullName = name.split(' ')
+    if (fullName.length > 1) {
+      let firstName = fullName[0].charAt(0).toUpperCase() + fullName[0].slice(1).toLowerCase()
+      let lastName = fullName[fullName.length - 1].charAt(0).toUpperCase() + fullName[fullName.length - 1].slice(1).toLowerCase()
 
-    if (match.length > 0) {
-      const phoneMatch = (match[0].phone === newPhone)
-      if (!phoneMatch) {
-        const msg = `${match[0].name} is already added to the phonebook - replace the old number with a new one?`
-        if (window.confirm(msg)) {
-          const newPerson = {
-            name: match[0].name,
-            phone: newPhone
-          }
-          // Comparing names for now since only the phone has been updated
-          personService.update(match[0].id, newPerson).then(newP => setPersons(persons.map(p => (p.id !== newP.id) ? p : newP)))
-
-        }
-      }
-      setMessage(`${match.name} is already added to the phone book - ${newPhone} is already added to the phone book `)
-      setWarning(!warning)
-      return false
+      return `${firstName} ${lastName}`
     }
-    return true
+    else {
+      return fullName[0].charAt(0).toUpperCase() + fullName[0].slice(1).toLowerCase()
+
+    }
+  }
+
+  const existingPerson = (id) => {
+    
+    const msg = `${formatName(newName)} is already added to the phonebook - replace the old number with a new one?`
+
+    if (window.confirm(msg)) {
+
+      const newNumber = {
+        phone: newPhone
+      }
+      personService.update(id, newNumber)
+        .then(updatedContact => {
+          setPersons(persons.map(p => p.id !== id ? p : updatedContact))
+        })
+      setMessage(`Updated ${formatName(newName)}'s number to ${newPhone}`)
+      clearMessage()
+      resetFields()
+    }
+  }
+
+  const resetFields = () => {
+    setNewName('')
+    setNewPhone('')
+  }
+
+  const createNewPerson = (newPerson) => {
+    personService.create(newPerson)
+      .then(returnedPerson => setPersons(persons.concat(returnedPerson)))
+    resetFields()
+    setMessage(`Added ${newPerson.name}`)
+    clearMessage()
+  }
+
+  const checkPersonExists = () => {
+    const match = persons.filter(person => person.name.toUpperCase() === newName.toUpperCase())
+    if (match.length > 0) {
+      return {
+        isFound: true,
+        id: match[0].id
+      }
+    }
+    return {
+      isFound: false,
+      id: null
+    }
   }
 
   const setToPerson = e => {
     e.preventDefault()
-    if (existingPerson()) {
+    let checkPerson = checkPersonExists()
+    if (checkPerson.isFound) {
+      existingPerson(checkPerson.id)
+    }
+    else {
       const newPerson = {
-        name: newName,
+        // Is it conventional to pass value to name property with a function call
+        name: formatName(newName),
         phone: newPhone
       }
-
-      personService.create(newPerson).then(returnedPerson => setPersons(persons.concat(returnedPerson)))
-      setNewName('')
-      setNewPhone('')
-      setMessage(`Added ${newPerson.name}`)
-      clearMessage()
+      createNewPerson(newPerson)
     }
   }
 
   const clearMessage = () => {
     setTimeout(() => {
       setMessage(null)
-    },5000 )
+    }, 5000)
   }
 
   const setToSearch = e => {
@@ -85,23 +120,22 @@ const App = () => {
   }
 
   const deletePerson = e => {
-    const id = parseInt(e.target.id)
+    const id = e.target.id
     const delPerson = persons.filter(p => p.id === id)
+    const name = delPerson[0].name
     personService.del(id)
-      .then(person =>{
-        setMessage(`${person.name} has been deleted.`)
+      .then(() => {
+        setMessage(`${name} has been deleted.`)
+        clearMessage()
       })
       .catch(() => {
         setWarning(!warning)
-        setMessage(`Information of ${delPerson.name} has already been removed from the server. `)
+        setMessage(`Information of ${formatName(name)} has already been removed from the server. `)
         clearMessage()
       })
     setPersons(persons.filter(p => p.id !== id))
     setMessage('')
   }
-  console.log('value of persons:', persons)
-
-
 
   return (
     <div>
