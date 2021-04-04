@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 // Relative url since front and backend are both on same address
-const baseUrl = 'http://localhost:3001/api/persons'
+const baseUrl = '/api/persons'
 
 const getAll = async () => {
     const request = await axios
