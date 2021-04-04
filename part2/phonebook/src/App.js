@@ -57,6 +57,10 @@ const App = () => {
         .then(updatedContact => {
           setPersons(persons.map(p => p.id !== id ? p : updatedContact))
         })
+      if(warning)
+      {
+        setWarning(!warning)
+      }
       setMessage(`Updated ${formatName(newName)}'s number to ${newPhone}`)
       clearMessage()
       resetFields()
@@ -70,9 +74,20 @@ const App = () => {
 
   const createNewPerson = (newPerson) => {
     personService.create(newPerson)
-      .then(returnedPerson => setPersons(persons.concat(returnedPerson)))
-    resetFields()
-    setMessage(`Added ${newPerson.name}`)
+      .then(returnedPerson => {
+        console.log('promise is not rejected...wut?', returnedPerson)
+        setPersons(persons.concat(returnedPerson))
+        resetFields()
+        setMessage(`Added ${newPerson.name}`)
+      })
+      .catch(error => {
+        console.log('error type:', typeof error)
+        if(!warning){
+          setWarning(!warning)
+        }
+        setMessage(error.error)
+      })
+
     clearMessage()
   }
 

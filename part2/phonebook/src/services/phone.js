@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 // Relative url since front and backend are both on same address
-const baseUrl = '/api/persons'
+const baseUrl = 'http://localhost:3001/api/persons'
 
 const getAll = async () => {
     const request = await axios
@@ -22,6 +22,10 @@ const create = async (newObj) => {
     const request = await axios
                           .post(baseUrl, newObj)
                           .then(response => response.data)
+                          .catch(error => {
+                              console.log('Error! Should be instance of error...:', error instanceof Error, typeof error)
+                            return Promise.reject(error.response.data)
+                          })
     return request
 }
 
